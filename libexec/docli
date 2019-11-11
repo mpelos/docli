@@ -81,6 +81,15 @@ export DOCLI_HOOK_PATH
 shopt -u nullglob
 
 
+# Exit when the executions come from a shim
+filename=`basename "$0"`
+if [ $(python src/docli_config.py exists $filename) == "0" ]; then
+  docli-exec $filename $@
+  exit $?
+fi
+###
+
+
 command="$1"
 case "$command" in
 "" )

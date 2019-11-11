@@ -18,14 +18,16 @@ function pwdhome {
 }
 
 service="$1"
+
+if [ $(python src/docli_config.py exists $service) != "0" ]; then
+  echo "CLI '$service' not registered"
+  exit 1
+fi
+
 image=$(python src/docli_config.py get_service_image $service)
 entrypoint=$(python src/docli_config.py get_service_entrypoint $service)
 cli_args_arr=($@)
 cli_args="${cli_args_arr[@]:1}"
-
-python src/docli_config.py exists $service || (
-  echo "CLI '$service' not registered" && exit 1
-)
 
 cmd="docker run -ti --rm -v $HOME:/root -w /root/$(pwdhome)"
 [ -n "$entrypoint" ] && cmd="$cmd --entrypoint $entrypoint"

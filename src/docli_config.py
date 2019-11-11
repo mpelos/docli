@@ -58,7 +58,10 @@ if __name__ == '__main__':
     if type(result) == None:
         pass
     elif type(result) == bool:
-        exit(0) if result else exit(1)
+        if result:
+            print(0)
+        else:
+            print(1)
     elif type(result) == list:
         print(' '.join(result))
     else:

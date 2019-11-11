@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Summary: Rehash docli shims (run this if some shim is missing)
+#
+# Usage: docli rehash
+
+mkdir -p shims
+
+services=$(python src/docli_config.py list_services)
+
+for service in $services; do
+  rm -f shims/$service
+  ln -s ../libexec/docli shims/$service
+done
