@@ -62,6 +62,8 @@ class DocliServiceManager:
 
 class Docli(object):
     def __init__(self):
+        self.service_manager = DocliServiceManager()
+
         parser = argparse.ArgumentParser(
             description='All in one CLi using Docker',
             usage='''docli <COMMAND> [<ARGS>]
@@ -90,13 +92,20 @@ Commands:
         parser.add_argument('service_name')
         args = parser.parse_args(sys.argv[2:3])
 
-        service_manager = DocliServiceManager()
-
-        if not service_manager.exists(args.service_name):
-            print 'CLI not registered'
+        if not self.service_manager.exists(args.service_name):
+            print "CLI '{}' not registered\n".format(args.service_name)
+            self.list()
             exit(1)
 
-        service_manager.execute_command(args.service_name, sys.argv[3:])
+        self.service_manager.execute_command(args.service_name, sys.argv[3:])
+
+    def list(self):
+        services = self.service_manager.services().keys()
+
+        if services:
+            print("Registered CLIs:\n    {}".format('    \n'.join(services)))
+        else:
+            print("There are no CLI registered. To register a CLI use 'docli add'.")
 
 
 if __name__ == '__main__':
