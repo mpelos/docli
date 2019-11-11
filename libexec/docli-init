@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# Summary: Configure the shell environment for docli
+# Usage: eval "$(docli init - [--no-rehash] [<shell>])"
+
+set -e
+
+print=""
+no_rehash=""
+for args in "$@"
+do
+  if [ "$args" = "-" ]; then
+    print=1
+    shift
+  fi
+
+  if [ "$args" = "--no-rehash" ]; then
+    no_rehash=1
+    shift
+  fi
+done
+
+shell="$1"
+if [ -z "$shell" ]; then
+  shell="$(ps -p "$PPID" -o 'args=' 2>/dev/null || true)"
+  shell="${shell%% *}"
+  shell="${shell##-}"
+  shell="${shell:-$SHELL}"
+  shell="${shell##*/}"
+fi
+
+root="${0%/*}/.."
+
+if [ -z "$print" ]; then
+  case "$shell" in
+  bash )
+    if [ -f "${HOME}/.bashrc" ] && [ ! -f "${HOME}/.bash_profile" ]; then
+      profile='~/.bashrc'
+    else
+      profile='~/.bash_profile'
+    fi
+    ;;
+  zsh )
+    profile='~/.zshrc'
+    ;;
+  ksh )
+    profile='~/.profile'
+    ;;
+  fish )
+    profile='~/.config/fish/config.fish'
+    ;;
+  * )
+    profile='your profile'
+    ;;
+  esac
+
+  { echo "# Load docli automatically by appending"
+    echo "# the following to ${profile}:"
+    echo
+    case "$shell" in
+    fish )
+      echo 'status --is-interactive; and source (docli init -|psub)'
+      ;;
+    * )
+      echo 'eval "$(docli init -)"'
+      ;;
+    esac
+    echo
+  } >&2
+
+  exit 1
+fi
+
+mkdir -p "${DOCLI_ROOT}/shims"
+
+case "$shell" in
+fish )
+  echo "set -gx PATH '${DOCLI_ROOT}/shims' \$PATH"
+  echo "set -gx DOCLI_SHELL $shell"
+;;
+* )
+  echo 'export PATH="'${DOCLI_ROOT}'/shims:${PATH}"'
+  echo "export DOCLI_SHELL=$shell"
+;;
+esac
+
+if [ -z "$no_rehash" ]; then
+  echo 'command docli rehash 2>/dev/null'
+fi
+
+commands=(`docli-commands --sh`)
+case "$shell" in
+fish )
+  cat <<EOS
+function docli
+  set command \$argv[1]
+  set -e argv[1]
+
+  switch "\$command"
+  case ${commands[*]}
+    source (docli "sh-\$command" \$argv|psub)
+  case '*'
+    command docli "\$command" \$argv
+  end
+end
+EOS
+  ;;
+ksh )
+  cat <<EOS
+function docli {
+  typeset command
+EOS
+  ;;
+* )
+  cat <<EOS
+docli() {
+  local command
+EOS
+  ;;
+esac
+
+if [ "$shell" != "fish" ]; then
+IFS="|"
+cat <<EOS
+  command="\${1:-}"
+  if [ "\$#" -gt 0 ]; then
+    shift
+  fi
+
+  command docli "\$command" "\$@"
+}
+EOS
+fi

@@ -6,7 +6,7 @@
 
 set -e
 
-services=$(python src/docli_config.py list_services)
+services=$(python $DOCLI_ROOT/src/docli_config.py list_services)
 
 if [ -z "$services" ]; then
   echo "There are no CLI registered. To register a CLI use 'docli add'."

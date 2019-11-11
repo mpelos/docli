@@ -6,7 +6,7 @@
 
 mkdir -p shims
 
-services=$(python src/docli_config.py list_services)
+services=$(python $DOCLI_ROOT/src/docli_config.py list_services)
 
 for service in $services; do
   rm -f shims/$service
