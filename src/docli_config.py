@@ -19,7 +19,9 @@ class DocliConfig:
         return self.get_service(service)['image']
 
     def list_services(self):
-        return self.services().keys()
+        services = self.services().keys()
+        services.sort()
+        return services
 
     def services(self):
         return self.config.get('services', {})
