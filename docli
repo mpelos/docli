@@ -103,7 +103,7 @@ Commands:
         services = self.service_manager.services().keys()
 
         if services:
-            print("Registered CLIs:\n    {}".format('    \n'.join(services)))
+            print("Registered CLIs:\n    {}".format('\n    '.join(services)))
         else:
             print("There are no CLI registered. To register a CLI use 'docli add'.")
 

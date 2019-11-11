@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+#
+# Summary: List registered CLIs
+#
+# Usage: docli list
+
+set -e
+
+services=$(python src/docli_config.py list_services)
+
+if [ -z "$services" ]; then
+  echo "There are no CLI registered. To register a CLI use 'docli add'."
+  exit
+fi
+
+echo "Registered CLIs:"
+for service in $services; do
+  echo "    $service"
+done
