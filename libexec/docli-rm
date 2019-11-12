@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+#
+# Summary: Removes a global CLI
+#
+# Usage: docli rm <cli-name>
+#
+# Remove CLI services from $HOME/.doclirc and it's shim.
+
+set -e
+
+service=$1
+
+if [ -z $service ]; then
+  docli-help --usage rm >&2
+  exit 1
+fi
+
+if [ "$(python $DOCLI_ROOT/src/docli_config.py remove_service $service)" != "1" ]; then
+  echo "CLI '$service' not found in ~/.doclirc"
+  exit 1
+fi

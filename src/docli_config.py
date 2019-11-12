@@ -20,6 +20,8 @@ class DocliConfig:
         with open(config_path, 'w') as file:
             file.write(new_config)
 
+        return True
+
     def exists(self, service):
         return service in self.list_services()
 
@@ -36,6 +38,21 @@ class DocliConfig:
         services = self.services().keys()
         services.sort()
         return services
+
+    def remove_service(self, service):
+        config_path = self.__config_paths()[0]
+        config = self.__load_config(config_path)
+
+        if not config.get('services', {}).get(service):
+            return False
+
+        del config['services'][service]
+        new_config = json.dumps(config, sort_keys=True, indent=2) + '\n'
+
+        with open(config_path, 'w') as file:
+            file.write(new_config)
+
+        return True
 
     def services(self):
         return self.config.get('services', {})
@@ -73,8 +90,6 @@ if __name__ == '__main__':
         pass
     elif type(result) == bool:
         if result:
-            print(0)
-        else:
             print(1)
     elif type(result) == list:
         print(' '.join(result))

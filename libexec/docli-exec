@@ -19,7 +19,7 @@ function pwdhome {
 
 service="$1"
 
-if [ $(python ${DOCLI_ROOT}/src/docli_config.py exists $service) != "0" ]; then
+if [ "$(python ${DOCLI_ROOT}/src/docli_config.py exists $service)" != "1" ]; then
   echo "CLI '$service' not registered"
   exit 1
 fi

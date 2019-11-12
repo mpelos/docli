@@ -83,7 +83,7 @@ shopt -u nullglob
 
 # Exit when the executions come from a shim
 filename=`basename "$0"`
-if [ $(python $DOCLI_ROOT/src/docli_config.py exists $filename) == "0" ]; then
+if [ "$(python $DOCLI_ROOT/src/docli_config.py exists $filename)" == "1" ]; then
   docli-exec $filename $@
   exit $?
 fi

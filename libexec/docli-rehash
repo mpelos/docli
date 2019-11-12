@@ -9,6 +9,6 @@ mkdir -p shims
 services=$(python $DOCLI_ROOT/src/docli_config.py list_services)
 
 for service in $services; do
-  rm -f shims/$service
-  ln -s ../libexec/docli shims/$service
+  rm -f $DOCLI_ROOT/shims/$service
+  ln -s $DOCLI_ROOT/libexec/docli $DOCLI_ROOT/shims/$service
 done
