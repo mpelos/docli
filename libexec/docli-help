@@ -152,7 +152,7 @@ if [ -z "$1" ] || [ "$1" == "docli" ]; then
   print_summaries commands local exec list rehash
   echo
   echo "See \`docli help <command>' for information on a specific command."
-  echo "For full documentation, see: https://github.com/docli/docli#readme"
+  echo "For full documentation, see: https://github.com/mpelos/docli#readme"
 else
   command="$1"
   if [ -n "$(command_path "$command")" ]; then
