@@ -81,11 +81,15 @@ export DOCLI_HOOK_PATH
 shopt -u nullglob
 
 
-# Exit when the executions come from a shim
+# Execute CLI command when execution come from a shim
 filename=`basename "$0"`
 if [ "$(python $DOCLI_ROOT/src/docli_config.py exists $filename)" == "1" ]; then
   docli-exec $filename $@
   exit $?
+elif [[ $0 == "$DOCLI_ROOT/shims"* ]]; then
+  path=${PATH/$DOCLI_ROOT\/shims:/}
+  PATH=$path $filename $@
+  exit
 fi
 ###
 

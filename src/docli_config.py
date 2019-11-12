@@ -57,7 +57,7 @@ class DocliConfig:
     def services(self):
         return self.config.get('services', {})
 
-    def __load_config(self, path = None):
+    def __load_config(self, path=None):
         paths = [path] if path else self.__config_paths()
         config = {}
 
