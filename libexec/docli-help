@@ -149,7 +149,7 @@ if [ -z "$1" ] || [ "$1" == "docli" ]; then
   [ -z "$usage" ] || exit
   echo
   echo "Some useful docli commands are:"
-  print_summaries commands local exec list rehash
+  print_summaries commands local add exec list rehash
   echo
   echo "See \`docli help <command>' for information on a specific command."
   echo "For full documentation, see: https://github.com/mpelos/docli#readme"

@@ -2,9 +2,23 @@ import json
 import os
 import sys
 
+CONFIG_FILE_NAME = '.doclirc'
+
 class DocliConfig:
     def __init__(self):
         self.config = self.__load_config()
+
+    def add_service(self, service, image, entrypoint=None, local=False):
+        config_path = self.__config_paths()[-1] if local else self.__config_paths()[0]
+        config = self.__load_config(config_path)
+
+        if not config.get('services'): config['services'] = {}
+        config['services'][service] = { 'image': image }
+        if entrypoint: config['services'][service]['entrypoint'] = entrypoint
+        new_config = json.dumps(config, sort_keys=True, indent=2) + '\n'
+
+        with open(config_path, 'w') as file:
+            file.write(new_config)
 
     def exists(self, service):
         return service in self.list_services()
@@ -26,14 +40,14 @@ class DocliConfig:
     def services(self):
         return self.config.get('services', {})
 
-    def __load_config(self):
+    def __load_config(self, path = None):
+        paths = [path] if path else self.__config_paths()
         config = {}
 
-        for path in self.__config_paths():
+        for path in paths:
             try:
-                config_path = os.path.realpath(path + '/.doclirc')
                 config.update(
-                    json.load(open(config_path))
+                    json.load(open(path))
                 )
             except (IOError, ValueError):
                 pass
@@ -43,7 +57,7 @@ class DocliConfig:
     def __config_paths(self):
         paths = [os.getcwd()] + self.__parent_directories(os.getcwd())
         paths.reverse()
-        return paths
+        return [os.path.realpath(path + '/' + CONFIG_FILE_NAME) for path in paths]
 
     def __parent_directories(self, path):
         if (os.environ['HOME'] == path): return []
@@ -55,7 +69,7 @@ if __name__ == '__main__':
     method = sys.argv[1]
     result = getattr(config, method)(*sys.argv[2:])
 
-    if type(result) == None:
+    if result is None:
         pass
     elif type(result) == bool:
         if result:

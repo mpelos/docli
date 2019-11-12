@@ -2,7 +2,7 @@
 #
 # Summary: Executes a CLI command
 #
-# Usage: docli exec CLI_NAME [CLI_ARGS]
+# Usage: docli exec <cli-name> [CLI_ARGS]
 #
 # Executes a registered CLI command using its Docker image and
 # entrypoint.

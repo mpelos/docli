@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# Summary: Register a new CLI
+#
+# Usage: docli add <cli-name> <docker-image> [--local] [--entrypoint=<docker-image-entrypoint>]
+#
+# Register a CLI service on $HOME/.doclirc when --local is
+# absent, otherwise it will register on $PWD/.doclirc.
+
+set -e
+
+unset image
+unset service
+unset local_flag
+unset entrypoint
+
+for arg; do
+  if [ ! -z ${entrypoint+x} ]; then
+    [ -z "$entrypoint" ] && entrypoint=$arg && continue
+  fi
+
+  case "$arg" in
+  --local ) local_flag=True ;;
+  --entrypoint* )
+    if [[ $arg == "--entrypoint="* ]]; then
+      entrypoint=${arg/"--entrypoint="/}
+    else
+      entrypoint=""
+    fi
+    ;;
+  * )
+    if [ -z "$service" ]; then
+      service=$arg
+    elif [ -z "$image" ]; then
+      image=$arg
+    fi
+    ;;
+  esac
+done
+
+if [[ $service == "" || $image == "" ]]; then
+  docli-help --usage add >&2
+  exit 1
+fi
+
+docker image inspect $image > /dev/null 2>&1 || docker pull $image
+
+python $DOCLI_ROOT/src/docli_config.py add_service $service $image $entrypoint $local_flag
+
+docli-rehash
+
+echo "CLI '$service' registered with image: $image"
