@@ -9,13 +9,13 @@
 
 set -e
 
-unset entrypoint
 unset image
 unset service
 unset volume
 unset volumes
 
 local_flag=0
+entrypoint=None
 
 for arg; do
   if [ ! -z ${entrypoint+x} ]; then

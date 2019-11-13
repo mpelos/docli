@@ -99,11 +99,19 @@ class DocliConfig:
         return [parent] + self.__parent_directories(parent)
 
 if __name__ == '__main__':
+    def parse_arg(arg):
+        if arg == "None":
+            return None
+
+        return arg
+
     config = DocliConfig()
     method = sys.argv[1]
-    if len(sys.argv) > 5: sys.argv[5] = sys.argv[5] == "1" # Used for #add_service local parameter
-    if len(sys.argv) > 6: sys.argv[6] = filter(None, sys.argv[6].split(',')) # Used for #add_service volumes parameter
-    result = getattr(config, method)(*sys.argv[2:])
+    args = [parse_arg(arg) for arg in sys.argv[2:]]
+
+    if len(sys.argv) > 5: args[3] = args[3] == "1" # Used for #add_service local parameter
+    if len(sys.argv) > 6: args[4] = filter(None, args[4].split(',')) # Used for #add_service volumes parameter
+    result = getattr(config, method)(*args)
 
     if result is None:
         pass
