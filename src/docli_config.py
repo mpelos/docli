@@ -8,19 +8,18 @@ class DocliConfig:
     def __init__(self):
         self.config = self.__load_config()
 
-    def add_service(self, service, image, entrypoint=None, local=False):
+    def add_service(self, service, image, entrypoint=None, local=False, volumes=[]):
         config_path = self.__config_paths()[-1] if local else self.__config_paths()[0]
         config = self.__load_config(config_path)
 
         if not config.get('services'): config['services'] = {}
         config['services'][service] = { 'image': image }
         if entrypoint: config['services'][service]['entrypoint'] = entrypoint
+        if volumes: config['services'][service]['volumes'] = volumes
         new_config = json.dumps(config, sort_keys=True, indent=2) + '\n'
 
         with open(config_path, 'w') as file:
             file.write(new_config)
-
-        return True
 
     def exists(self, service):
         return service in self.list_services()
@@ -33,6 +32,9 @@ class DocliConfig:
 
     def get_service_image(self, service):
         return self.get_service(service)['image']
+
+    def get_service_volumes(self, service):
+        return self.get_service(service).get('volumes', [])
 
     def list_services(self):
         services = self.services().keys()
@@ -84,13 +86,14 @@ class DocliConfig:
 if __name__ == '__main__':
     config = DocliConfig()
     method = sys.argv[1]
+    if len(sys.argv) > 5: sys.argv[5] = sys.argv[5] == "1" # Used for #add_service local parameter
+    if len(sys.argv) > 6: sys.argv[6] = filter(None, sys.argv[6].split(',')) # Used for #add_service volumes parameter
     result = getattr(config, method)(*sys.argv[2:])
 
     if result is None:
         pass
     elif type(result) == bool:
-        if result:
-            print(1)
+        if result: print(1)
     elif type(result) == list:
         print(' '.join(result))
     else:

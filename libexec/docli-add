@@ -2,21 +2,30 @@
 #
 # Summary: Register a new CLI
 #
-# Usage: docli add <cli-name> <docker-image> [--local] [--entrypoint=<docker-image-entrypoint>]
+# Usage: docli add <cli-name> <docker-image> [--local] [--entrypoint=<docker-image-entrypoint>] [-v,--volume <volume-lis>]
 #
 # Register a CLI service on $HOME/.doclirc when --local is
 # absent, otherwise it will register on $PWD/.doclirc.
 
 set -e
 
+unset entrypoint
 unset image
 unset service
-unset local_flag
-unset entrypoint
+unset volume
+unset volumes
+
+local_flag=0
 
 for arg; do
   if [ ! -z ${entrypoint+x} ]; then
     [ -z "$entrypoint" ] && entrypoint=$arg && continue
+  fi
+
+  if [ ! -z ${volume+x} ]; then
+    volumes="$arg,$volumes"
+    unset volume
+    continue
   fi
 
   case "$arg" in
@@ -26,6 +35,15 @@ for arg; do
       entrypoint=${arg/"--entrypoint="/}
     else
       entrypoint=""
+    fi
+    ;;
+  --volume* | -v=* | -v )
+    if [[ $arg == "--volume="* ]]; then
+      volumes="${arg/"--volume="/},$volumes"
+    elif [[ $arg == "-v="* ]]; then
+      volumes="${arg/"-v="/},$volumes"
+    else
+      volume=""
     fi
     ;;
   * )
@@ -45,7 +63,7 @@ fi
 
 docker image inspect $image > /dev/null 2>&1 || docker pull $image
 
-python $DOCLI_ROOT/src/docli_config.py add_service $service $image $entrypoint $local_flag
+python $DOCLI_ROOT/src/docli_config.py add_service $service $image $entrypoint $local_flag $volumes
 
 docli-rehash
 
