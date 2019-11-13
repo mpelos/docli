@@ -36,6 +36,21 @@ class DocliConfig:
     def get_service_volumes(self, service):
         return self.get_service(service).get('volumes', [])
 
+    def get_template(self, template_path):
+        with open(template_path) as file:
+            template = json.load(file)
+
+        return template
+
+    def get_template_entrypoint(self, template_path):
+        return self.get_template(template_path).get('entrypoint', '')
+
+    def get_template_image(self, template_path):
+        return self.get_template(template_path)['image']
+
+    def get_template_volumes(self, template_path):
+        return self.get_template(template_path).get('volumes', [])
+
     def list_services(self):
         services = self.services().keys()
         services.sort()

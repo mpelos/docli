@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#
+# Summary: Imports CLI template from docli code base
+#
+# Usage: docli import <template>
+#        docli import -l,--list
+#
+# Imports CLI template from docli code base. To see all the
+# template options run:
+#   docli import list
+
+set -e
+
+arg=$1
+
+function list_templates() {
+  templates=$(ls $DOCLI_TEMPLATE_DIR | xargs)
+
+  for template in $templates; do
+    echo ${template/\.json/}
+  done
+}
+
+case "$arg" in
+  --list | -l)
+    list_templates
+    exit $?
+    ;;
+esac
+
+template_path="$DOCLI_TEMPLATE_DIR/$arg.json"
+
+if [ ! -f "$template_path" ]; then
+  echo "Template '$arg' not found"
+  exit 1
+fi
+
+image=$(python $DOCLI_ROOT/src/docli_config.py get_template_image $template_path)
+entrypoint=$(python $DOCLI_ROOT/src/docli_config.py get_template_entrypoint $template_path)
+volumes=$(python $DOCLI_ROOT/src/docli_config.py get_template_volumes $template_path)
+
+cmd="docli add $arg $image"
+[ -n "$entrypoint" ] && cmd="$cmd --entrypoint $entrypoint"
+
+if [ -n "$volumes" ]; then
+  for volume in $volumes; do
+    volume=$(eval "echo $volume")
+    cmd="$cmd -v $volume"
+  done
+fi
+
+$cmd

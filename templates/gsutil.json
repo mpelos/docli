@@ -1,0 +1,7 @@
+{
+  "entrypoint": "gsutil",
+  "image": "google/cloud-sdk:alpine",
+  "volumes": [
+    "~/.config:/.config/root"
+  ]
+}

@@ -57,6 +57,9 @@ else
 fi
 export DOCLI_DIR
 
+DOCLI_TEMPLATE_DIR="$DOCLI_ROOT/templates"
+export DOCLI_TEMPLATE_DIR
+
 
 shopt -s nullglob
 

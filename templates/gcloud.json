@@ -1,0 +1,7 @@
+{
+  "entrypoint": "gcloud",
+  "image": "google/cloud-sdk:alpine",
+  "volumes": [
+    "$HOME/.config:/root/.config"
+  ]
+}
