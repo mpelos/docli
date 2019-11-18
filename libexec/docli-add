@@ -29,7 +29,7 @@ for arg; do
   fi
 
   case "$arg" in
-  --local ) local_flag=True ;;
+  --local ) local_flag=1 ;;
   --entrypoint* )
     if [[ $arg == "--entrypoint="* ]]; then
       entrypoint=${arg/"--entrypoint="/}
