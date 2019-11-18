@@ -30,7 +30,7 @@ volumes=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_volumes $service)
 cli_args_arr=($@)
 cli_args="${cli_args_arr[@]:1}"
 
-cmd="docker run -ti --rm -v $HOME:/root -w /root/$(pwdhome)"
+cmd="docker run -ti --rm --user $UID -e HOME=/root -v $HOME:/root -w /root/$(pwdhome)"
 [ -n "$entrypoint" ] && cmd="$cmd --entrypoint $entrypoint"
 for volume in $volumes; do
   cmd="$cmd -v=$volume"
