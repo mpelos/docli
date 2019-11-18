@@ -4,7 +4,7 @@
 #
 # Usage: docli rehash
 
-mkdir -p shims
+mkdir -p $DOCLI_ROOT/shims
 
 services=$(python $DOCLI_ROOT/src/docli_config.py list_services)
 
