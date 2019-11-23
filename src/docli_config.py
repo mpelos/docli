@@ -33,6 +33,9 @@ class DocliConfig:
     def get_service_image(self, service):
         return self.get_service(service)['image']
 
+    def get_service_ports(self, service):
+        return self.get_service(service).get('ports', [])
+
     def get_service_volumes(self, service):
         return self.get_service(service).get('volumes', [])
 
