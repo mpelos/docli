@@ -37,7 +37,7 @@ class DocliConfig:
         return self.get_service(service).get('ports', [])
 
     def get_service_network(self, service):
-        return self.get_service(service)['network']
+        return self.get_service(service).get('network')
 
     def get_service_links(self, service):
         return self.get_service(service).get('links', [])
