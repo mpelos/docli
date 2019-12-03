@@ -28,16 +28,22 @@ image=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_image $service)
 entrypoint=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_entrypoint $service)
 volumes=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_volumes $service)
 ports=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_ports $service)
+network=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_network $service)
+links=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_links $service)
 cli_args_arr=($@)
 cli_args="${cli_args_arr[@]:1}"
 
 cmd="docker run -ti --rm --user $UID -e HOME=/root -v $HOME:/root -w /root/$(pwdhome)"
 [ -n "$entrypoint" ] && cmd="$cmd --entrypoint $entrypoint"
+[ -n "$network" ] && cmd="$cmd --network $network"
 for volume in $volumes; do
   cmd="$cmd -v=$volume"
 done
 for port in $ports; do
   cmd="$cmd -p=$port"
+done
+for link in $links; do
+  cmd="$cmd --link=$link"
 done
 cmd="$cmd $image $cli_args"
 
