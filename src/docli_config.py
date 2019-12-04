@@ -61,7 +61,7 @@ class DocliConfig:
         return self.get_template(template_path).get('volumes', [])
 
     def list_services(self):
-        services = self.services().keys()
+        services = list(self.services().keys())
         services.sort()
         return services
 
