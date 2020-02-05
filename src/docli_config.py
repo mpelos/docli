@@ -45,6 +45,9 @@ class DocliConfig:
     def get_service_volumes(self, service):
         return self.get_service(service).get('volumes', [])
 
+    def get_service_use_host_user(self, service):
+        return not (self.get_service(service).get('useHostUser') == False)
+
     def get_template(self, template_path):
         with open(template_path) as file:
             template = json.load(file)
@@ -126,6 +129,7 @@ if __name__ == '__main__':
         pass
     elif type(result) == bool:
         if result: print(1)
+        else: print(0)
     elif type(result) == list:
         print(' '.join(result))
     else:

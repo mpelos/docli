@@ -30,12 +30,15 @@ volumes=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_volumes $service)
 ports=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_ports $service)
 network=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_network $service)
 links=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_links $service)
+use_host_user=$(python ${DOCLI_ROOT}/src/docli_config.py get_service_use_host_user $service)
+
 cli_args_arr=($@)
 cli_args="${cli_args_arr[@]:1}"
 
-cmd="docker run -ti --rm --user $UID -e HOME=/root -v $HOME:/root -w /root/$(pwdhome)"
+cmd="docker run -ti --rm -e HOME=/root -v $HOME:/root -w /root/$(pwdhome)"
 [ -n "$entrypoint" ] && cmd="$cmd --entrypoint $entrypoint"
 [ -n "$network" ] && cmd="$cmd --network $network"
+[ "$use_host_user" == "1" ] && cmd="$cmd --user $UID"
 for volume in $volumes; do
   cmd="$cmd -v=$volume"
 done
